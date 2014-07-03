@@ -4,8 +4,15 @@
   "description": "Simple client for DemocracyOS/notifier",
   "version": "0.0.1",
   "keywords": [],
-  "dependencies": {},
+  "dependencies": {
+    "component/object": "0.0.3"
+  },
   "development": {},
   "license": "MIT",
-  "scripts": [ ]
+  "scripts": [
+    "index.js"
+  ],
+  "remotes": [
+    "https://raw.githubusercontent.com"
+  ]
 }
