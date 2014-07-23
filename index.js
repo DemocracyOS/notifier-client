@@ -3,17 +3,20 @@
  */
 
 var object = require('object');
+var request = require('superagent');
+var log = require('debug')('notifier-client');
 
 /**
- * Expose `CSV` constructor.
+ * Expose `NotifierClient` constructor.
  */
 
 module.exports = NotifierClient;
 
 var defaults = {
   host: 'localhost',
+  path: '/api/events',
   port: '80',
-  path: '/api',
+  protocol: 'http',
   token: null
 }
 
@@ -31,10 +34,63 @@ var defaults = {
  */
 
 function NotifierClient (options) {
-  if (!(this instanceof CSV)) {
-    return new CSV(data, options);
+  if (!(this instanceof NotifierClient)) {
+    return new NotifierClient(options);
   }
 
   this.options = object.merge({}, defaults);
   this.options = object.merge(this.options, options || {});
 }
+
+NotifierClient.prototype.notify = function(event) {
+
+  if(typeof event === 'object') {
+
+    this.event = event;
+    this.send();
+
+  } else {
+    this.event.event = event;
+  }
+
+  return this;
+};
+
+NotifierClient.prototype.to = function(recipient) {
+
+  if(typeof recipient === 'string') {
+    recipient = [ recipient ];
+  }
+
+  this.event.recipient = recipient;
+  return this;
+};
+
+NotifierClient.prototype.withData = function(data) {
+  this.event.data = data;
+  return this;
+};
+
+NotifierClient.prototype.send = function() {
+  request
+  .post(this.buildUrl())
+  .set('Accept', 'application/json')
+  .send(this.event)
+  .end(function (err, res) {
+    if (err) {
+      //TODO: handle error
+      console.log(err);
+      return;
+    };
+
+    if (res.body.error) {
+      console.log(res.body.error);
+      //TODO: handle error
+    }
+    //TODO: handle success
+  });
+};
+
+NotifierClient.prototype.buildUrl = function() {
+  return this.options.protocol + this.options.host + ':' + this.options.port + this.options.path;
+};

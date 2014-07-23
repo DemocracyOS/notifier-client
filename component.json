@@ -5,7 +5,8 @@
   "version": "0.0.1",
   "keywords": [],
   "dependencies": {
-    "component/object": "0.0.3"
+    "component/object": "0.0.3",
+    "superagent": "0.18.2"
   },
   "development": {},
   "license": "MIT",
