@@ -3,17 +3,23 @@
   "repo": "DemocracyOS/notifier-client",
   "description": "Simple client for DemocracyOS/notifier",
   "version": "0.0.1",
-  "keywords": [],
+  "keywords": [
+    "client",
+    "DemocracyOS",
+    "notifications",
+    "notifier"
+  ],
   "dependencies": {
     "component/object": "0.0.3",
-    "superagent": "0.18.2"
+    "visionmedia/debug": "1.0.4",
+    "visionmedia/superagent": "0.18.2"
   },
-  "development": {},
-  "license": "MIT",
   "scripts": [
     "index.js"
   ],
   "remotes": [
     "https://raw.githubusercontent.com"
-  ]
+  ],
+  "development": { },
+  "license": "MIT",
 }
