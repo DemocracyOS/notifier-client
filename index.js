@@ -15,7 +15,7 @@ module.exports = NotifierClient;
 var defaults = {
   host: 'localhost',
   path: '/api/events',
-  port: '80',
+  port: 80,
   protocol: 'http',
   token: null
 }
