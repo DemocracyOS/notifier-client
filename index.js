@@ -78,16 +78,17 @@ NotifierClient.prototype.send = function() {
   .send(this.event)
   .end(function (err, res) {
     if (err) {
-      //TODO: handle error
-      console.log(err);
+      log('Unexpected error when sending event %j', this.event);
       return;
     };
 
     if (res.body.error) {
-      console.log(res.body.error);
-      //TODO: handle error
+      log('Error for event %j: %s', this.event, res.body.error);
+      return;
     }
-    //TODO: handle success
+
+    // Great success!
+
   });
 };
 
