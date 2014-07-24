@@ -57,12 +57,7 @@ NotifierClient.prototype.notify = function(event) {
 };
 
 NotifierClient.prototype.to = function(recipient) {
-
-  if(typeof recipient === 'string') {
-    recipient = [ recipient ];
-  }
-
-  this.event.recipient = recipient;
+  this.event.user = recipient;
   return this;
 };
 
