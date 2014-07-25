@@ -1,0 +1,30 @@
+{
+  "name": "notifier-client",
+  "repo": "DemocracyOS/notifier-client",
+  "description": "Simple client for DemocracyOS/notifier",
+  "version": "0.0.1",
+  "author": {
+    "name" : "Guido Vilariño",
+    "email" : "guido@democraciaenred.org",
+    "url" : "http://twitter.com/gvilarino"
+  },
+  "keywords": [
+    "client",
+    "democracyos",
+    "notifications",
+    "notifier"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/DemocracyOS/notifier-client.git"
+  },
+  "dependencies": {
+    "object-component": "0.0.3",
+    "debug": "1.0.4",
+    "superagent": "0.18.2"
+  },
+  "main": "index.js",
+  "bugs": "git://github.com/DemocracyOS/notifier-client/issues",
+  "engines": { "node": "*" },
+  "license": "MIT"
+}

@@ -1,8 +1,5 @@
-build: components index.js
-	@component build --dev
-
-components: component.json
-	@component install --dev
+install:
+	@npm install
 
 clean:
-	rm -fr build components
+	rm -fr node_modules
