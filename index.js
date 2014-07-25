@@ -2,7 +2,7 @@
  * Module dependencies.
  */
 
-var object = require('object');
+var object = require('object-component');
 var request = require('superagent');
 var log = require('debug')('notifier-client');
 
