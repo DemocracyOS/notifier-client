@@ -42,12 +42,21 @@ function NotifierClient (options) {
   this.options = object.merge(this.options, options || {});
 }
 
-NotifierClient.prototype.notify = function(event) {
+
+/**
+* Sends notification
+*
+* @param {Object} or {String} either event with data or just event name
+* @param {Function} optional callback
+* @return {NotifierClient} `NotifierClient` instance
+* @api public
+*/
+NotifierClient.prototype.notify = function(event, callback) {
   this.event = {};
 
   if(typeof event === 'object') {
     this.event = event;
-    this.send();
+    this.send(callback);
   } else {
     this.event.event = event;
   }
@@ -55,16 +64,36 @@ NotifierClient.prototype.notify = function(event) {
   return this;
 };
 
+/**
+* Initialize user field of event
+*
+* @param {String} recepient/user id
+* @return {NotifierClient} `NotifierClient` instance
+* @api public
+*/
 NotifierClient.prototype.to = function(recipient) {
   this.event.user = recipient;
   return this;
 };
 
+/**
+* Initialize data field of event
+*
+* @param {Object} event data
+* @return {NotifierClient} `NotifierClient` instance
+* @api public
+*/
 NotifierClient.prototype.withData = function(data) {
   this.event.data = data;
   return this;
 };
 
+/**
+* Sends notification request
+*
+* @param {Function} optional callback
+* @api public
+*/
 NotifierClient.prototype.send = function(callback) {
   callback = callback || function () {};
 
@@ -87,6 +116,11 @@ NotifierClient.prototype.send = function(callback) {
     });
 };
 
+/**
+* Builds request URL
+*
+* @api private
+*/
 NotifierClient.prototype._buildUrl = function() {
   return this.options.protocol + '://' + this.options.host + ':' + this.options.port + this.options.path + '?access_token=' + this.options.token;
 };
