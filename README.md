@@ -24,7 +24,11 @@ var notifier = require('notifier-client')({
 Use the `notify` method,
 
 ```js
-notifier.notify({event: 'user-resistered', user: 'a@a.com', data: {registered: new Date() }}, function () {
+notifier.notify({
+	event: 'user-resistered',
+	user: 'a@a.com',
+	data: {registered: new Date() }
+}, function () {
 	// notified!
 });
 ```
@@ -38,6 +42,22 @@ notifier.notify('user-registered')
 	.send(function () {
 		// notified!
 	});
+```
+
+In both cases `callback` parameter is optional,
+
+```js
+notifier.notify({
+	event: 'user-resistered',
+	user: 'a@a.com',
+	data: {registered: new Date() });
+
+// or
+
+notifier.notify('user-registered')
+	.to('a@a.com')
+	.withData({registered: new Date() })
+	.send();
 ```
 
 ## License
