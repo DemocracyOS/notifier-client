@@ -51,6 +51,7 @@ function NotifierClient (options) {
 * @return {NotifierClient} `NotifierClient` instance
 * @api public
 */
+
 NotifierClient.prototype.notify = function(event, callback) {
   this.event = {};
 
@@ -71,6 +72,7 @@ NotifierClient.prototype.notify = function(event, callback) {
 * @return {NotifierClient} `NotifierClient` instance
 * @api public
 */
+
 NotifierClient.prototype.to = function(recipient) {
   this.event.user = recipient;
   return this;
@@ -83,6 +85,7 @@ NotifierClient.prototype.to = function(recipient) {
 * @return {NotifierClient} `NotifierClient` instance
 * @api public
 */
+
 NotifierClient.prototype.withData = function(data) {
   this.event.data = data;
   return this;
@@ -94,6 +97,7 @@ NotifierClient.prototype.withData = function(data) {
 * @param {Function} optional callback
 * @api public
 */
+
 NotifierClient.prototype.send = function(callback) {
   callback = callback || function () {};
 
@@ -121,6 +125,7 @@ NotifierClient.prototype.send = function(callback) {
 *
 * @api private
 */
+
 NotifierClient.prototype._buildUrl = function() {
   return this.options.protocol + '://' + this.options.host + ':' + this.options.port + this.options.path + '?access_token=' + this.options.token;
 };
