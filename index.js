@@ -43,9 +43,7 @@ function NotifierClient (options) {
 }
 
 NotifierClient.prototype.notify = function(event) {
-
   if(typeof event === 'object') {
-
     this.event = event;
     this.send();
 
@@ -75,7 +73,7 @@ NotifierClient.prototype.send = function() {
     if (err) {
       log('Unexpected error when sending event %j', this.event);
       return;
-    };
+    }
 
     if (res.body.error) {
       log('Error for event %j: %s', this.event, res.body.error);
