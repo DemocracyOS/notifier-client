@@ -18,7 +18,7 @@ var defaults = {
   port: 80,
   protocol: 'http',
   token: null
-}
+};
 
 /**
  * Creates a Client instance. Takes an object with options.
@@ -64,7 +64,9 @@ NotifierClient.prototype.withData = function(data) {
   return this;
 };
 
-NotifierClient.prototype.send = function() {
+NotifierClient.prototype.send = function(callback) {
+  callback = callback || function () {};
+
   request
   .post(this.buildUrl())
   .set('Accept', 'application/json')
@@ -72,16 +74,15 @@ NotifierClient.prototype.send = function() {
   .end(function (err, res) {
     if (err) {
       log('Unexpected error when sending event %j', this.event);
-      return;
+      return callback(err);
     }
 
-    if (res.body.error) {
+    if (res.body.error || res.statusCode > 201) {
       log('Error for event %j: %s', this.event, res.body.error);
-      return;
+      return callback(res.body);
     }
 
-    // Great success!
-
+    callback(null, res.body);
   });
 };
 
