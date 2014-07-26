@@ -69,7 +69,7 @@ NotifierClient.prototype.send = function(callback) {
   callback = callback || function () {};
 
   request
-    .post(this.buildUrl())
+    .post(this._buildUrl())
     .set('Accept', 'application/json')
     .send(this.event)
     .end(function (err, res) {
@@ -87,6 +87,6 @@ NotifierClient.prototype.send = function(callback) {
     });
 };
 
-NotifierClient.prototype.buildUrl = function() {
+NotifierClient.prototype._buildUrl = function() {
   return this.options.protocol + '://' + this.options.host + ':' + this.options.port + this.options.path + '?access_token=' + this.options.token;
 };
