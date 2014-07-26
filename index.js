@@ -43,10 +43,11 @@ function NotifierClient (options) {
 }
 
 NotifierClient.prototype.notify = function(event) {
+  this.event = {};
+
   if(typeof event === 'object') {
     this.event = event;
     this.send();
-
   } else {
     this.event.event = event;
   }
@@ -68,24 +69,24 @@ NotifierClient.prototype.send = function(callback) {
   callback = callback || function () {};
 
   request
-  .post(this.buildUrl())
-  .set('Accept', 'application/json')
-  .send(this.event)
-  .end(function (err, res) {
-    if (err) {
-      log('Unexpected error when sending event %j', this.event);
-      return callback(err);
-    }
+    .post(this.buildUrl())
+    .set('Accept', 'application/json')
+    .send(this.event)
+    .end(function (err, res) {
+      if (err) {
+        log('Unexpected error when sending event %j', this.event);
+        return callback(err);
+      }
 
-    if (res.body.error || res.statusCode > 201) {
-      log('Error for event %j: %s', this.event, res.body.error);
-      return callback(res.body);
-    }
+      if (res.body.error || res.statusCode > 201) {
+        log('Error for event %j: %s', this.event, res.body.error);
+        return callback(res.body);
+      }
 
-    callback(null, res.body);
-  });
+      callback(null, res.body);
+    });
 };
 
 NotifierClient.prototype.buildUrl = function() {
-  return this.options.protocol + this.options.host + ':' + this.options.port + this.options.path;
+  return this.options.protocol + '://' + this.options.host + ':' + this.options.port + this.options.path + '?access_token=' + this.options.token;
 };
