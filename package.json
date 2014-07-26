@@ -12,7 +12,11 @@
     "client",
     "democracyos",
     "notifications",
-    "notifier"
+    "notifier",
+    "mandrill",
+    "twilio",
+    "mailgun",
+    "apn"
   ],
   "repository": {
     "type": "git",
