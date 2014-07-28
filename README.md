@@ -1,7 +1,7 @@
 notifier-client
 ===============
 
-Simple client for https://github.com/likeastore/notifier
+Simple client for https://github.com/DemocracyOS/notifier, forked from [likeastore](https://github.com/likeastore/notifier)
 
 ## Usage
 
