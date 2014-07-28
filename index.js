@@ -18,7 +18,7 @@ var defaults = {
   port: 80,
   protocol: 'http',
   token: null
-}
+};
 
 /**
  * Creates a Client instance. Takes an object with options.
@@ -42,13 +42,22 @@ function NotifierClient (options) {
   this.options = object.merge(this.options, options || {});
 }
 
-NotifierClient.prototype.notify = function(event) {
+
+/**
+* Sends notification
+*
+* @param {Object} or {String} either event with data or just event name
+* @param {Function} optional callback
+* @return {NotifierClient} `NotifierClient` instance
+* @api public
+*/
+
+NotifierClient.prototype.notify = function(event, callback) {
+  this.event = {};
 
   if(typeof event === 'object') {
-
     this.event = event;
-    this.send();
-
+    this.send(callback);
   } else {
     this.event.event = event;
   }
@@ -56,37 +65,67 @@ NotifierClient.prototype.notify = function(event) {
   return this;
 };
 
+/**
+* Initialize user field of event
+*
+* @param {String} recepient/user id
+* @return {NotifierClient} `NotifierClient` instance
+* @api public
+*/
+
 NotifierClient.prototype.to = function(recipient) {
   this.event.user = recipient;
   return this;
 };
+
+/**
+* Initialize data field of event
+*
+* @param {Object} event data
+* @return {NotifierClient} `NotifierClient` instance
+* @api public
+*/
 
 NotifierClient.prototype.withData = function(data) {
   this.event.data = data;
   return this;
 };
 
-NotifierClient.prototype.send = function() {
+/**
+* Sends notification request
+*
+* @param {Function} optional callback
+* @api public
+*/
+
+NotifierClient.prototype.send = function(callback) {
+  callback = callback || function () {};
+
   request
-  .post(this.buildUrl())
-  .set('Accept', 'application/json')
-  .send(this.event)
-  .end(function (err, res) {
-    if (err) {
-      log('Unexpected error when sending event %j', this.event);
-      return;
-    };
+    .post(this._buildUrl())
+    .set('Accept', 'application/json')
+    .send(this.event)
+    .end(function (err, res) {
+      if (err) {
+        log('Unexpected error when sending event %j', this.event);
+        return callback(err);
+      }
 
-    if (res.body.error) {
-      log('Error for event %j: %s', this.event, res.body.error);
-      return;
-    }
+      if (res.body.error || res.statusCode > 201) {
+        log('Error for event %j: %s', this.event, res.body.error);
+        return callback(res.body);
+      }
 
-    // Great success!
-
-  });
+      callback(null, res.body);
+    });
 };
 
-NotifierClient.prototype.buildUrl = function() {
-  return this.options.protocol + this.options.host + ':' + this.options.port + this.options.path;
+/**
+* Builds request URL
+*
+* @api private
+*/
+
+NotifierClient.prototype._buildUrl = function() {
+  return this.options.protocol + '://' + this.options.host + ':' + this.options.port + this.options.path + '?access_token=' + this.options.token;
 };

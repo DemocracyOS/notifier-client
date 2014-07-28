@@ -1,18 +1,22 @@
 {
   "name": "notifier-client",
   "repo": "DemocracyOS/notifier-client",
-  "description": "Simple client for DemocracyOS/notifier",
-  "version": "0.0.2",
+  "description": "Client for notifier",
+  "version": "0.0.3",
   "author": {
-    "name" : "Guido Vilariño",
-    "email" : "guido@democraciaenred.org",
-    "url" : "http://twitter.com/gvilarino"
+    "name": "Guido Vilariño",
+    "email": "guido@democraciaenred.org",
+    "url": "http://twitter.com/gvilarino"
   },
   "keywords": [
     "client",
     "democracyos",
     "notifications",
-    "notifier"
+    "notifier",
+    "mandrill",
+    "twilio",
+    "mailgun",
+    "apn"
   ],
   "repository": {
     "type": "git",
@@ -25,6 +29,8 @@
   },
   "main": "index.js",
   "bugs": "git://github.com/DemocracyOS/notifier-client/issues",
-  "engines": { "node": "*" },
+  "engines": {
+    "node": "*"
+  },
   "license": "MIT"
 }
