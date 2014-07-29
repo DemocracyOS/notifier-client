@@ -4,6 +4,7 @@
 
 var object = require('object-component');
 var request = require('superagent');
+var url = require('url');
 var log = require('debug')('notifier-client');
 
 /**
@@ -102,7 +103,7 @@ NotifierClient.prototype.send = function(callback) {
   callback = callback || function () {};
 
   request
-    .post(this._buildUrl())
+    .post(this._buildUrl(this.options))
     .set('Accept', 'application/json')
     .send(this.event)
     .end(function (err, res) {
@@ -126,6 +127,12 @@ NotifierClient.prototype.send = function(callback) {
 * @api private
 */
 
-NotifierClient.prototype._buildUrl = function() {
-  return this.options.protocol + '://' + this.options.host + ':' + this.options.port + this.options.path + '?access_token=' + this.options.token;
+NotifierClient.prototype._buildUrl = function(opts) {
+  return url.format({
+    protocol: opts.protocol,
+    hostname: opts.host,
+    port: opts.port,
+    pathname: opts.path,
+    search: '?access_token=' + opts.token
+  });
 };
