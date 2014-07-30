@@ -90,7 +90,7 @@ NotifierClient.prototype.to = function(recipient) {
 NotifierClient.prototype.withData = function(data) {
 
   if (typeof data === 'object') {
-    this.event = object.merge(event, data);
+    this.event = object.merge(this.event, data);
   } else {
     event[data] = data;
   }
