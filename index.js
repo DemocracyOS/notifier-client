@@ -56,7 +56,7 @@ function NotifierClient (options) {
 NotifierClient.prototype.notify = function(event, callback) {
   this.event = {};
 
-  if(typeof event === 'object') {
+  if (typeof event === 'object') {
     this.event = event;
     this.send(callback);
   } else {
@@ -88,7 +88,13 @@ NotifierClient.prototype.to = function(recipient) {
 */
 
 NotifierClient.prototype.withData = function(data) {
-  this.event.data = data;
+
+  if (typeof data === 'object') {
+    this.event = object.merge(event, data);
+  } else {
+    event[data] = data;
+  }
+
   return this;
 };
 
