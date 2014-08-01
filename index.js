@@ -14,7 +14,7 @@ var log = require('debug')('notifier-client');
 module.exports = NotifierClient;
 
 var defaults = {
-  protocol: 'http'
+  protocol: 'http',
   path: '/api/events',
   port: 80,
 };
