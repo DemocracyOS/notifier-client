@@ -45,7 +45,7 @@ function NotifierClient (options) {
   if (!this.enabled()) log('not enough options - notifications disabled')
 }
 
-Noti.prototype.enabled = function() {
+NotifierClient.prototype.enabled = function() {
   return this.protocol && this.host && this.path && this.port && this.token;
 };
 
