@@ -14,22 +14,22 @@ var log = require('debug')('notifier-client');
 module.exports = NotifierClient;
 
 var defaults = {
-  host: 'localhost',
+  protocol: 'http'
   path: '/api/events',
   port: 80,
-  protocol: 'http',
-  token: null
 };
 
 /**
  * Creates a Client instance. Takes an object with options.
+ * If required options aren't specified, notifier-client considers
+ * no server is available and will not send any request.
  *
  * @param {Object} options for configuring the client instance.
- *     - host {String} defaults to `localhost`.
- *     - port {String} defaults to '80'.
- *     - protocol {String} defautls to `http`.
- *     - path {String} api path - defaults to `/api`.
- *     - token {String} api token - defaults to `null`.
+ *     - host {String} host name for the notifier server - REQUIRED.
+ *     - port {String} port for the notifier server - defaults to '80'.
+ *     - protocol {String} http or https? - defaults to `http`.
+ *     - path {String} notifier server events api path - defaults to `/api/events`.
+ *     - token {String} api token - REQUIRED.
  * @return {NotifierClient} `NotifierClient` instance
  * @api public
  */
@@ -41,8 +41,13 @@ function NotifierClient (options) {
 
   this.options = object.merge({}, defaults);
   this.options = object.merge(this.options, options || {});
+
+  if (!this.enabled()) log('not enough options - notifications disabled')
 }
 
+Noti.prototype.enabled = function() {
+  return this.protocol && this.host && this.path && this.port && this.token;
+};
 
 /**
 * Sends notification
@@ -106,25 +111,30 @@ NotifierClient.prototype.withData = function(data) {
 */
 
 NotifierClient.prototype.send = function(callback) {
-  callback = callback || function () {};
 
-  request
-    .post(this._buildUrl(this.options))
-    .set('Accept', 'application/json')
-    .send(this.event)
-    .end(function (err, res) {
-      if (err) {
-        log('Unexpected error when sending event %j', this.event);
-        return callback(err);
-      }
+  if (this.enabled()) {
+    callback = callback || function () {};
 
-      if (res.body.error || res.statusCode > 201) {
-        log('Error for event %j: %s', this.event, res.body.error);
-        return callback(res.body);
-      }
+    request
+      .post(this._buildUrl(this.options))
+      .set('Accept', 'application/json')
+      .send(this.event)
+      .end(function (err, res) {
+        if (err) {
+          log('Unexpected error when sending event %j', this.event);
+          return callback(err);
+        }
 
-      callback(null, res.body);
-    });
+        if (res.body.error || res.statusCode > 201) {
+          log('Error for event %j: %s', this.event, res.body.error);
+          return callback(res.body);
+        }
+
+        callback(null, res.body);
+      });
+  } else {
+    log('unable to send notification request - notifier disabled');
+  }
 };
 
 /**
