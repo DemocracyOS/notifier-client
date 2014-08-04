@@ -46,7 +46,7 @@ function NotifierClient (options) {
 }
 
 NotifierClient.prototype.enabled = function() {
-  return this.protocol && this.host && this.path && this.port && this.token;
+  return !!(this.protocol && this.host && this.path && this.port && this.token);
 };
 
 /**
