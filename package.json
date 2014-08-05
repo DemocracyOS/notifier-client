@@ -2,7 +2,7 @@
   "name": "notifier-client",
   "repo": "DemocracyOS/notifier-client",
   "description": "Client for notifier",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "author": {
     "name": "Guido Vilariño",
     "email": "guido@democraciaenred.org",
