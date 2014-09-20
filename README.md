@@ -14,7 +14,6 @@ $ npm install notifier-client
 Initialize the client,
 
 ```js
-var opts =
 var notifier = require('notifier-client')({
 	host: 'notifier.example.com',
 	token: '3943fa9c7eb8b13071582910e76d737e1bf91abe'
