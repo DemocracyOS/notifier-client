@@ -59,6 +59,11 @@ notifier.notify('user-registered')
 	.send();
 ```
 
+## TODOS
+
+* Add some tests
+* Make it a `component`
+
 ## License
 
 MIT
