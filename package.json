@@ -1,6 +1,6 @@
 {
   "name": "notifier-client",
-  "repo": "DemocracyOS/notifier-client",
+  "repository": "DemocracyOS/notifier-client",
   "description": "Client for notifier",
   "version": "0.1.0",
   "author": {
