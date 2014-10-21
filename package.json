@@ -1,8 +1,8 @@
 {
   "name": "notifier-client",
-  "repo": "DemocracyOS/notifier-client",
+  "repository": "DemocracyOS/notifier-client",
   "description": "Client for notifier",
-  "version": "0.0.10",
+  "version": "0.1.1",
   "author": {
     "name": "Guido Vilariño",
     "email": "guido@democraciaenred.org",
@@ -30,7 +30,7 @@
   "main": "index.js",
   "bugs": "git://github.com/DemocracyOS/notifier-client/issues",
   "engines": {
-    "node": "*"
+    "node": "0.10.x"
   },
   "license": "MIT"
 }
