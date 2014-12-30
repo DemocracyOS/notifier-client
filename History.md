@@ -1,4 +1,9 @@
 
+0.2.0 / 2014-12-30
+==================
+
+ * Allow configuration through string URL instead of opts object. Closes #6
+
 0.1.1 / 2014-10-21
 ==================
 
