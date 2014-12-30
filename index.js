@@ -14,9 +14,8 @@ var log = require('debug')('notifier-client');
 module.exports = NotifierClient;
 
 var defaults = {
-  protocol: 'http',
-  path: '/api/events',
-  port: 80,
+  url: 'http://localhost:9001/api/events',
+  token: null
 };
 
 /**
@@ -25,11 +24,8 @@ var defaults = {
  * no server is available and will not send any request.
  *
  * @param {Object} options for configuring the client instance.
- *     - host {String} host name for the notifier server - REQUIRED.
- *     - port {String} port for the notifier server - defaults to '80'.
- *     - protocol {String} http or https? - defaults to `http`.
- *     - path {String} notifier server events api path - defaults to `/api/events`.
- *     - token {String} api token - REQUIRED.
+ *   - url {String} full URL to the notifier events endpoint. Defaults to `http://localhost:9001/api/events`
+ *   - token {String} `notifier` api token - REQUIRED.
  * @return {NotifierClient} `NotifierClient` instance
  * @api public
  */
@@ -39,15 +35,24 @@ function NotifierClient (options) {
     return new NotifierClient(options);
   }
 
-  this.options = object.merge({}, defaults);
-  this.options = object.merge(this.options, options || {});
+  var opts = object.merge({}, defaults);
+  opts = object.merge(opts, options || {});
 
-  if (!this.enabled()) log('not enough options - notifications disabled')
+  this.config = { url: url.parse(opts.url), token: opts.token };
+
+  if (!this.enabled()) {
+    log('Notifications disabled - Error with notifier-client options');
+  } else {
+    log('Notifications configured with options: %j and URL: %s', this.config, this._buildUrl());
+  }
 }
 
+/**
+ * Checks if the `notifier-client` is all set-up and enabled for use.
+ * @return {Boolean} whether the `notifier` should be considered enabled
+ */
 NotifierClient.prototype.enabled = function() {
-  var o = this.options;
-  return !!(o.protocol && o.host && o.path && o.port && o.token);
+  return this._isValidConfig();
 };
 
 /**
@@ -62,7 +67,7 @@ NotifierClient.prototype.enabled = function() {
 NotifierClient.prototype.notify = function(event, callback) {
   this.event = {};
 
-  if (typeof event === 'object') {
+  if ('object' === typeof event) {
     this.event = event;
     this.send(callback);
   } else {
@@ -117,7 +122,7 @@ NotifierClient.prototype.send = function(callback) {
     callback = callback || function () {};
 
     request
-      .post(this._buildUrl(this.options))
+      .post(this._buildUrl(this.config))
       .set('Accept', 'application/json')
       .send(this.event)
       .end(function (err, res) {
@@ -144,12 +149,21 @@ NotifierClient.prototype.send = function(callback) {
 * @api private
 */
 
-NotifierClient.prototype._buildUrl = function(opts) {
+NotifierClient.prototype._buildUrl = function () {
   return url.format({
-    protocol: opts.protocol,
-    hostname: opts.host,
-    port: opts.port,
-    pathname: opts.path,
-    search: '?access_token=' + opts.token
+    protocol: this.config.url.protocol,
+    hostname: this.config.url.hostname,
+    port: this.config.url.port,
+    pathname: this.config.url.path,
+    search: '?access_token=' + this.config.token
   });
+};
+
+/**
+ * Asserts the current configuration
+ * @return {Boolean} whether the configuration is valid.
+ */
+NotifierClient.prototype._isValidConfig = function() {
+  var o = this.config;
+  return !!(o.url.protocol && o.url.host && o.url.path && o.url.port && o.token);
 };
