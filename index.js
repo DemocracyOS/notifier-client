@@ -150,13 +150,17 @@ NotifierClient.prototype.send = function(callback) {
 */
 
 NotifierClient.prototype._buildUrl = function () {
-  return url.format({
-    protocol: this.config.url.protocol,
-    hostname: this.config.url.hostname,
-    port: this.config.url.port,
-    pathname: this.config.url.path,
-    search: '?access_token=' + this.config.token
-  });
+  var urlToFormat = {
+    protocol: config.url.protocol,
+    hostname: config.url.hostname,
+    port: config.url.port,
+    pathname: config.url.path,
+    search: '?access_token=' + config.token
+  }
+  if((config.url.protocol == 'http' && config.url.port == 80) || (config.url.protocol == 'https' && config.url.port == 443)){
+    urlToFormat.port = '';
+  }
+  return url.format(urlToFormat);
 };
 
 /**
