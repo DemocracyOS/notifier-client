@@ -165,7 +165,7 @@ NotifierClient.prototype._buildUrl = function () {
  */
 NotifierClient.prototype._isValidConfig = function() {
   var o = this.config;
-  return !!(o.url.protocol && o.url.host && o.url.path && o.url.port && o.token);
+  return !!(o.url.protocol && o.url.host && o.url.path && o.token);
 };
 
 /**
