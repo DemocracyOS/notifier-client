@@ -1,4 +1,10 @@
 
+0.3.0 / 2015-06-15
+==================
+
+ * Update README.md
+ * URL port defaults to 80 if not specified (or 443 if protocol is https). Closes #8
+
 0.2.0 / 2014-12-30
 ==================
 
