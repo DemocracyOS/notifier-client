@@ -15,8 +15,8 @@ Initialize the client,
 
 ```js
 var notifier = require('notifier-client')({
-	host: 'notifier.example.com',
-	token: '3943fa9c7eb8b13071582910e76d737e1bf91abe'
+	host: 'http://notifier.example.com/api/events',
+	token: 'your-custom-token'
 });
 ```
 
@@ -61,8 +61,7 @@ notifier.notify('user-registered')
 
 ## TODOS
 
-* Add some tests
-* Make it a `component`
+* Tests
 
 ## License
 
