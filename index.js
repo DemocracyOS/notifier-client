@@ -150,13 +150,13 @@ NotifierClient.prototype.send = function(callback) {
 */
 
 NotifierClient.prototype._buildUrl = function () {
-  return url.format({
+  return this._pruneDefaultPorts(url.format({
     protocol: this.config.url.protocol,
     hostname: this.config.url.hostname,
     port: this.config.url.port,
     pathname: this.config.url.path,
     search: '?access_token=' + this.config.token
-  });
+  }));
 };
 
 /**
@@ -165,5 +165,19 @@ NotifierClient.prototype._buildUrl = function () {
  */
 NotifierClient.prototype._isValidConfig = function() {
   var o = this.config;
-  return !!(o.url.protocol && o.url.host && o.url.path && o.url.port && o.token);
+  return !!(o.url.protocol && o.url.host && o.url.path && o.token);
 };
+
+/**
+ * Omit default ports for http and https from urls
+ * @param {String} an url
+ * @return {String} url without port number if port matches default for protocol.
+ */
+
+NotifierClient.prototype._pruneDefaultPorts = function(urlToPrune) {
+  var urlObj = url.parse(urlToPrune);
+  if((urlObj.protocol == 'http' && urlObj.port == 80) || (urlObj.protocol == 'https' && urlObj.port == 443)){
+    delete urlObj.port;
+  }
+  return url.format(urlObj);
+}
