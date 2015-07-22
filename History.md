@@ -1,4 +1,10 @@
 
+0.3.2 / 2015-07-22
+==================
+
+ * Remove all semicolons
+ * Discern and log connection errors when calling the server. Closes #9
+
 0.3.1 / 2015-06-22
 ==================
 
