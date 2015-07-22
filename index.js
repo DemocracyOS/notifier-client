@@ -2,21 +2,21 @@
  * Module dependencies.
  */
 
-var object = require('object-component');
-var request = require('superagent');
-var url = require('url');
-var log = require('debug')('notifier-client');
+var object = require('object-component')
+var request = require('superagent')
+var url = require('url')
+var log = require('debug')('notifier-client')
 
 /**
  * Expose `NotifierClient` constructor.
  */
 
-module.exports = NotifierClient;
+module.exports = NotifierClient
 
 var defaults = {
   url: 'http://localhost:9001/api/events',
   token: null
-};
+}
 
 /**
  * Creates a Client instance. Takes an object with options.
@@ -32,18 +32,18 @@ var defaults = {
 
 function NotifierClient (options) {
   if (!(this instanceof NotifierClient)) {
-    return new NotifierClient(options);
+    return new NotifierClient(options)
   }
 
-  var opts = object.merge({}, defaults);
-  opts = object.merge(opts, options || {});
+  var opts = object.merge({}, defaults)
+  opts = object.merge(opts, options || {})
 
-  this.config = { url: url.parse(opts.url), token: opts.token };
+  this.config = { url: url.parse(opts.url), token: opts.token }
 
   if (!this.enabled()) {
-    log('Notifications disabled - Error with notifier-client options');
+    log('Notifications disabled - Error with notifier-client options')
   } else {
-    log('Notifications configured with options: %j and URL: %s', this.config, this._buildUrl());
+    log('Notifications configured with options: %j and URL: %s', this.config, this._buildUrl())
   }
 }
 
@@ -52,8 +52,8 @@ function NotifierClient (options) {
  * @return {Boolean} whether the `notifier` should be considered enabled
  */
 NotifierClient.prototype.enabled = function() {
-  return this._isValidConfig();
-};
+  return this._isValidConfig()
+}
 
 /**
 * Sends notification
@@ -65,17 +65,17 @@ NotifierClient.prototype.enabled = function() {
 */
 
 NotifierClient.prototype.notify = function(event, callback) {
-  this.event = {};
+  this.event = {}
 
   if ('object' === typeof event) {
-    this.event = event;
-    this.send(callback);
+    this.event = event
+    this.send(callback)
   } else {
-    this.event.event = event;
+    this.event.event = event
   }
 
-  return this;
-};
+  return this
+}
 
 /**
 * Initialize user field of event
@@ -86,9 +86,9 @@ NotifierClient.prototype.notify = function(event, callback) {
 */
 
 NotifierClient.prototype.to = function(recipient) {
-  this.event.user = recipient;
-  return this;
-};
+  this.event.user = recipient
+  return this
+}
 
 /**
 * Initialize data field of event
@@ -101,13 +101,13 @@ NotifierClient.prototype.to = function(recipient) {
 NotifierClient.prototype.withData = function(data) {
 
   if (typeof data === 'object') {
-    this.event = object.merge(this.event, data);
+    this.event = object.merge(this.event, data)
   } else {
-    event[data] = data;
+    event[data] = data
   }
 
-  return this;
-};
+  return this
+}
 
 /**
 * Sends notification request
@@ -119,7 +119,7 @@ NotifierClient.prototype.withData = function(data) {
 NotifierClient.prototype.send = function(callback) {
 
   if (this.enabled()) {
-    callback = callback || function () {};
+    callback = callback || function () {}
 
     request
       .post(this._buildUrl(this.config))
@@ -128,24 +128,24 @@ NotifierClient.prototype.send = function(callback) {
       .end(function (err, res) {
         if (err) {
           if ('ECONNREFUSED' === err.code) {
-            log('Unable connect to the notifier server - Error: %j', err);
+            log('Unable connect to the notifier server - Error: %j', err)
           } else {
-            log('Unexpected error when sending event %j', this.event);
+            log('Unexpected error when sending event %j', this.event)
           }
-          return callback(err);
+          return callback(err)
         }
 
         if (res.body.error || res.statusCode > 201) {
-          log('Error for event %j: %s', this.event, res.body.error);
-          return callback(res.body);
+          log('Error for event %j: %s', this.event, res.body.error)
+          return callback(res.body)
         }
 
-        callback(null, res.body);
-      });
+        callback(null, res.body)
+      })
   } else {
-    log('Unable to send notification request - notifier disabled');
+    log('Unable to send notification request - notifier disabled')
   }
-};
+}
 
 /**
 * Builds request URL
@@ -160,17 +160,17 @@ NotifierClient.prototype._buildUrl = function () {
     port: this.config.url.port,
     pathname: this.config.url.path,
     search: '?access_token=' + this.config.token
-  }));
-};
+  }))
+}
 
 /**
  * Asserts the current configuration
  * @return {Boolean} whether the configuration is valid.
  */
 NotifierClient.prototype._isValidConfig = function() {
-  var o = this.config;
-  return !!(o.url.protocol && o.url.host && o.url.path && o.token);
-};
+  var o = this.config
+  return !!(o.url.protocol && o.url.host && o.url.path && o.token)
+}
 
 /**
  * Omit default ports for http and https from urls
@@ -179,9 +179,9 @@ NotifierClient.prototype._isValidConfig = function() {
  */
 
 NotifierClient.prototype._pruneDefaultPorts = function(urlToPrune) {
-  var urlObj = url.parse(urlToPrune);
+  var urlObj = url.parse(urlToPrune)
   if((urlObj.protocol == 'http' && urlObj.port == 80) || (urlObj.protocol == 'https' && urlObj.port == 443)){
-    delete urlObj.port;
+    delete urlObj.port
   }
-  return url.format(urlObj);
+  return url.format(urlObj)
 }
