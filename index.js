@@ -127,7 +127,11 @@ NotifierClient.prototype.send = function(callback) {
       .send(this.event)
       .end(function (err, res) {
         if (err) {
-          log('Unexpected error when sending event %j', this.event);
+          if ('ECONNREFUSED' === err.code) {
+            log('Unable connect to the notifier server - Error: %j', err);
+          } else {
+            log('Unexpected error when sending event %j', this.event);
+          }
           return callback(err);
         }
 
@@ -139,7 +143,7 @@ NotifierClient.prototype.send = function(callback) {
         callback(null, res.body);
       });
   } else {
-    log('unable to send notification request - notifier disabled');
+    log('Unable to send notification request - notifier disabled');
   }
 };
 
