@@ -2,7 +2,7 @@
   "name": "notifier-client",
   "repository": "DemocracyOS/notifier-client",
   "description": "Client for notifier or notifier-server",
-  "version": "0.3.2",
+  "version": "1.0.0-rc1",
   "author": "Democracia en Red <speak@democracyos.org> (http://democraciaenred.org)",
   "keywords": [
     "client",

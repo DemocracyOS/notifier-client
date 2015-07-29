@@ -1,4 +1,11 @@
 
+1.0.0-rc1 / 2015-07-29
+==================
+
+ * Add support for an embedded notifier
+ * Bump superagent dep to ^1.2.0
+ * Bump debug dep to ˆ2.2.0
+
 0.3.2 / 2015-07-22
 ==================
 
