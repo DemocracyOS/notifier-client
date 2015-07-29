@@ -1,13 +1,9 @@
 {
   "name": "notifier-client",
   "repository": "DemocracyOS/notifier-client",
-  "description": "Client for notifier",
+  "description": "Client for notifier or notifier-server",
   "version": "0.3.2",
-  "author": {
-    "name": "Guido Vilariño",
-    "email": "guido@democraciaenred.org",
-    "url": "http://twitter.com/gvilarino"
-  },
+  "author": "Democracia en Red <speak@democracyos.org> (http://democraciaenred.org)",
   "keywords": [
     "client",
     "democracyos",
@@ -24,8 +20,8 @@
   },
   "dependencies": {
     "object-component": "0.0.3",
-    "debug": "1.0.4",
-    "superagent": "0.18.2"
+    "debug": "^2.2.0",
+    "superagent": "^1.2.0"
   },
   "main": "index.js",
   "bugs": "git://github.com/DemocracyOS/notifier-client/issues",
