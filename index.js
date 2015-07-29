@@ -14,8 +14,8 @@ var log = require('debug')('notifier-client')
 module.exports = NotifierClient
 
 var defaults = {
-  url: 'http://localhost:9001/api/events',
-  token: null
+  url: 'http://localhost:9001/api/events', // it's over 9000!
+  token: ''
 }
 
 /**
@@ -29,42 +29,47 @@ var defaults = {
  * @return {NotifierClient} `NotifierClient` instance
  * @api public
  */
-
-function NotifierClient (options) {
+function NotifierClient (opts) {
   if (!(this instanceof NotifierClient)) {
-    return new NotifierClient(options)
+    return new NotifierClient(opts)
   }
 
-  var opts = object.merge({}, defaults)
-  opts = object.merge(opts, options || {})
+  // determine strategy for submitting a notification event
+  if (_embedded(opts)) {
+    this.sendStrategy = embeddedSend
+    this.config = { notifier: opts.notifier }
+  } else {
+    var o = object.merge({}, defaults)
+    o = object.merge(o, opts || {})
 
-  this.config = { url: url.parse(opts.url), token: opts.token }
+    this.sendStrategy = remoteSend
+    this.config = { url: url.parse(o.url), token: o.token }
+  }
 
   if (!this.enabled()) {
     log('Notifications disabled - Error with notifier-client options')
-  } else {
-    log('Notifications configured with options: %j and URL: %s', this.config, this._buildUrl())
   }
 }
 
 /**
- * Checks if the `notifier-client` is all set-up and enabled for use.
- * @return {Boolean} whether the `notifier` should be considered enabled
+ * Whether the `NotifierClient` is all set-up and enabled for use.
+ * @return {Boolean} whether notifications should be considered enabled
+ * @api public
  */
-NotifierClient.prototype.enabled = function() {
-  return this._isValidConfig()
+NotifierClient.prototype.enabled = function enabled () {
+  return _embedded(this.config) || _isValidRemoteConfig(this.config)
 }
 
 /**
-* Sends notification
+* Sends a notification event, or prepares the `NotifierClient` to send
+* a notification event with the paramenter name.
 *
-* @param {Object} or {String} either event with data or just event name
+* @param {Mixed} event with data or just event name
 * @param {Function} optional callback
 * @return {NotifierClient} `NotifierClient` instance
 * @api public
 */
-
-NotifierClient.prototype.notify = function(event, callback) {
+NotifierClient.prototype.notify = function notify(event, callback) {
   this.event = {}
 
   if ('object' === typeof event) {
@@ -78,15 +83,14 @@ NotifierClient.prototype.notify = function(event, callback) {
 }
 
 /**
-* Initialize user field of event
+* Initialize to field of event
 *
-* @param {String} recepient/user id
+* @param {String} recipient recipient's id or email
 * @return {NotifierClient} `NotifierClient` instance
 * @api public
 */
-
-NotifierClient.prototype.to = function(recipient) {
-  this.event.user = recipient
+NotifierClient.prototype.to = function to(recipient) {
+  this.event.to = recipient
   return this
 }
 
@@ -97,10 +101,9 @@ NotifierClient.prototype.to = function(recipient) {
 * @return {NotifierClient} `NotifierClient` instance
 * @api public
 */
+NotifierClient.prototype.withData = function withData(data) {
 
-NotifierClient.prototype.withData = function(data) {
-
-  if (typeof data === 'object') {
+  if ('object' === typeof data) {
     this.event = object.merge(this.event, data)
   } else {
     event[data] = data
@@ -115,70 +118,100 @@ NotifierClient.prototype.withData = function(data) {
 * @param {Function} optional callback
 * @api public
 */
+NotifierClient.prototype.send = function send(event, callback) {
+  if ('function' === typeof event) return this.send(null, event)
 
-NotifierClient.prototype.send = function(callback) {
+  // allow overriding the internal event
+  var e = event || this.event
 
   if (this.enabled()) {
-    callback = callback || function () {}
-
-    request
-      .post(this._buildUrl(this.config))
-      .set('Accept', 'application/json')
-      .send(this.event)
-      .end(function (err, res) {
-        if (err) {
-          if ('ECONNREFUSED' === err.code) {
-            log('Unable connect to the notifier server - Error: %j', err)
-          } else {
-            log('Unexpected error when sending event %j', this.event)
-          }
-          return callback(err)
-        }
-
-        if (res.body.error || res.statusCode > 201) {
-          log('Error for event %j: %s', this.event, res.body.error)
-          return callback(res.body)
-        }
-
-        callback(null, res.body)
-      })
+    this.sendStrategy(this.config, e, callback)
   } else {
     log('Unable to send notification request - notifier disabled')
   }
 }
 
 /**
-* Builds request URL
-*
-* @api private
-*/
+ * Whether `notifier` is running (or should run) as an embedded service
+ * instead of in a remote server
+ * @return {Boolean} whether `notifier` is embedded or a remote server
+ */
+NotifierClient.prototype.embedded = function embedded () {
+  return _embedded(this.config)
+}
 
-NotifierClient.prototype._buildUrl = function () {
-  return this._pruneDefaultPorts(url.format({
-    protocol: this.config.url.protocol,
-    hostname: this.config.url.hostname,
-    port: this.config.url.port,
-    pathname: this.config.url.path,
-    search: '?access_token=' + this.config.token
+/**
+ * Send event directly to a `notifier` instance
+ */
+function embeddedSend (config, event, callback) {
+  config.notifier.notify(event, callback)
+}
+
+
+/**
+ * Send event to a remote `notifier`
+ */
+function remoteSend (config, event, callback) {
+  request
+    .post(_buildUrl(config))
+    .set('Accept', 'application/json')
+    .send(event)
+    .end(function (err, res) {
+      if (err) {
+        if ('ECONNREFUSED' === err.code) {
+          log('Unable connect to the notifier server - Error: %j', err)
+        } else {
+          log('Unexpected error when sending event %j', event)
+        }
+        return callback(err)
+      }
+
+      if (res.body.error || res.statusCode > 201) {
+        log('Error for event %j: %s', event, res.body.error)
+        return callback(res.body)
+      }
+
+      callback(null, res.body)
+    })
+}
+
+/**
+ * Whether the parameter config implies that `notifier` is embedded or running remotely
+ */
+function _embedded(config) {
+  return config.notifier && ('string' != typeof config.notifier)
+}
+
+/**
+* Builds request URL
+*/
+function _buildUrl(config) {
+  return _pruneDefaultPorts(url.format({
+    protocol: config.url.protocol,
+    hostname: config.url.hostname,
+    port: config.url.port,
+    pathname: config.url.path,
+    search: '?access_token=' + config.token
   }))
 }
 
 /**
- * Asserts the current configuration
- * @return {Boolean} whether the configuration is valid.
+ * Asserts the current configuration for a remote `notifier`
+ * @return {Boolean} whether the configuration is valid
+ * @api private
  */
-NotifierClient.prototype._isValidConfig = function() {
-  var o = this.config
-  return !!(o.url.protocol && o.url.host && o.url.path && o.token)
+function _isValidRemoteConfig(config) {
+  var c = config
+  return  !!(c.url.protocol && c.url.host && c.url.path && c.token)
 }
 
 /**
  * Omit default ports for http and https from urls
- * @param {String} an url
+ * @param {String} the url to be pruned
  * @return {String} url without port number if port matches default for protocol.
+ * @api private
  */
-
-NotifierClient.prototype._pruneDefaultPorts = function(urlToPrune) {
+function _pruneDefaultPorts(urlToPrune) {
   var urlObj = url.parse(urlToPrune)
   if((urlObj.protocol == 'http' && urlObj.port == 80) || (urlObj.protocol == 'https' && urlObj.port == 443)){
     delete urlObj.port
