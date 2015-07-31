@@ -1,4 +1,9 @@
 
+1.0.0-rc2 / 2015-07-31
+==================
+
+ * Ensure event is always a JSON before sending data. Closes #14
+
 1.0.0-rc1 / 2015-07-29
 ==================
 
