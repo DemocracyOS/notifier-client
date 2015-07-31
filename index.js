@@ -124,6 +124,11 @@ NotifierClient.prototype.send = function send(event, callback) {
   // allow overriding the internal event
   var e = event || this.event
 
+  if (!e) return callback && callback(new Error('Unable to send undefined event'))
+
+  // flatten all values to strings (e.g.: ObjectIds, arrays, etc.)
+  e = JSON.parse(JSON.stringify(e))
+
   if (this.enabled()) {
     this.sendStrategy(this.config, e, callback)
   } else {
