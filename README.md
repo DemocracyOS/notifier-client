@@ -15,7 +15,7 @@ Initialize the client,
 
 ```js
 var notifier = require('notifier-client')({
-	host: 'http://notifier.example.com/api/events',
+	url: 'http://notifier.example.com/api/events',
 	token: 'your-custom-token'
 });
 ```
